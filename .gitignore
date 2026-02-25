@@ -3,3 +3,9 @@ __pycache__/
 *.pyc
 .env
 .idea/
+node_modules/
+data/
+models/
+*.pt
+*.pth
+mlruns/
