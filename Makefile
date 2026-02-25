@@ -1,4 +1,4 @@
-.PHONY: dev build down logs clean
+.PHONY: dev build down logs clean train lint test frontend backend start
 
 dev:
 	docker compose up --build
@@ -25,4 +25,7 @@ test:
 	pytest backend/tests/
 
 frontend:
-	cd frontend && npm run dev
+	cd frontend/DialogGPT && npm run dev
+
+backend:
+	cd backend && fastapi dev main.py
