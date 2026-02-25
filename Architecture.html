@@ -1,10 +1,1026 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Dialog GPT — Architecture Blueprint</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --border: #1e1e2e;
+    --accent: #e63946;
+    --gold: #f4a261;
+    --cyan: #48cae4;
+    --green: #52b788;
+    --purple: #9d4edd;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(rgba(230,57,70,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(230,57,70,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 2rem; position: relative; z-index: 1; }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 4rem 0 3rem;
+    position: relative;
+  }
+  header::after {
+    content: 'MOVIE DIALOG GPT';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 8rem;
+    font-weight: 800;
+    color: rgba(255,255,255,0.015);
+    white-space: nowrap;
+    pointer-events: none;
+    letter-spacing: -4px;
+  }
+  .tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 0.25rem 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    animation: fadeIn 0.5s ease;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    animation: fadeIn 0.7s ease;
+  }
+  h1 span { color: var(--accent); }
+  .subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--muted);
+    animation: fadeIn 0.9s ease;
+  }
+
+  /* Phase Tabs */
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .tab {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .tab:hover, .tab.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(230,57,70,0.05);
+  }
+
+  /* Sections */
+  .section { display: none; animation: fadeIn 0.3s ease; }
+  .section.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Architecture Card */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 2rem;
+  }
+  .arch-col {
+    background: var(--surface);
+    padding: 1.5rem;
+  }
+  .arch-col-header {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .layer {
+    margin-bottom: 1rem;
+    border-left: 2px solid var(--border);
+    padding-left: 1rem;
+    position: relative;
+  }
+  .layer::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .layer.accent::before { background: var(--accent); border-color: var(--accent); }
+  .layer.cyan::before { background: var(--cyan); }
+  .layer.gold::before { background: var(--gold); }
+  .layer.green::before { background: var(--green); }
+  .layer.purple::before { background: var(--purple); }
+
+  .layer-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .layer-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    background: var(--border);
+    color: var(--muted);
+  }
+  .layer-badge.free { background: rgba(82,183,136,0.15); color: var(--green); }
+  .layer-detail {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* Flow diagram */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+  }
+  .flow-node {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1rem 1.25rem;
+    text-align: center;
+    min-width: 120px;
+    flex-shrink: 0;
+    position: relative;
+    transition: border-color 0.2s;
+    cursor: default;
+  }
+  .flow-node:hover { border-color: var(--accent); }
+  .flow-node-icon { font-size: 1.5rem; display: block; margin-bottom: 0.4rem; }
+  .flow-node-name { font-size: 0.75rem; font-weight: 600; }
+  .flow-node-tech {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-top: 0.25rem;
+  }
+  .flow-arrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    padding: 0 0.5rem;
+    flex-shrink: 0;
+  }
+
+  /* Repo structure */
+  .repo {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 2;
+    margin-bottom: 2rem;
+  }
+  .repo .dir { color: var(--cyan); }
+  .repo .file { color: var(--muted); }
+  .repo .comment { color: var(--accent); opacity: 0.7; font-size: 0.7rem; }
+  .repo .indent1 { padding-left: 1.5rem; }
+  .repo .indent2 { padding-left: 3rem; }
+  .repo .indent3 { padding-left: 4.5rem; }
+
+  /* Phase timeline */
+  .timeline { margin-bottom: 2rem; }
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+  .timeline-phase {
+    background: var(--bg);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-right: 1px solid var(--border);
+  }
+  .timeline-phase-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0.3;
+  }
+  .timeline-phase-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .timeline-content { padding: 1.25rem; }
+  .timeline-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .timeline-desc {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .timeline-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.75rem;
+  }
+  .tool-chip {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border);
+    color: var(--cyan);
+    border-color: rgba(72,202,228,0.3);
+    background: rgba(72,202,228,0.05);
+  }
+
+  /* Cost table */
+  .cost-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .cost-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+  }
+  .cost-card-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .cost-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.82rem;
+  }
+  .cost-item:last-child { border-bottom: none; }
+  .cost-free { color: var(--green); font-family: 'Space Mono', monospace; font-size: 0.75rem; }
+  .cost-paid { color: var(--gold); font-family: 'Space Mono', monospace; font-size: 0.75rem; }
+
+  /* Checklist */
+  .checklist { margin-bottom: 2rem; }
+  .check-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-top: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    background: var(--surface);
+  }
+  .check-item:first-child { border-top: 1px solid var(--border); }
+  .check-item:hover { background: rgba(230,57,70,0.04); }
+  .check-item.done { opacity: 0.5; }
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--muted);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: var(--green);
+    transition: all 0.2s;
+  }
+  .check-item.done .checkbox { border-color: var(--green); background: rgba(82,183,136,0.1); }
+  .check-label { font-size: 0.85rem; }
+  .check-meta { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); margin-top: 0.2rem; }
+
+  /* Section title */
+  .section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* Big diagram */
+  .arch-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+  .diag-row {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .diag-box {
+    border: 1px solid var(--border);
+    padding: 0.6rem 1rem;
+    font-size: 0.78rem;
+    text-align: center;
+    min-width: 90px;
+    background: var(--bg);
+    position: relative;
+  }
+  .diag-box.highlight-red { border-color: var(--accent); color: var(--accent); }
+  .diag-box.highlight-cyan { border-color: var(--cyan); color: var(--cyan); }
+  .diag-box.highlight-gold { border-color: var(--gold); color: var(--gold); }
+  .diag-box.highlight-green { border-color: var(--green); color: var(--green); }
+  .diag-box.highlight-purple { border-color: var(--purple); color: var(--purple); }
+  .diag-box .diag-sub { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--muted); margin-top: 0.15rem; display: block; }
+  .diag-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .diag-divider {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--muted);
+    margin: 0.5rem 0;
+    letter-spacing: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .arch-grid { grid-template-columns: 1fr; }
+    .cost-grid { grid-template-columns: 1fr; }
+    .timeline-item { grid-template-columns: 1fr; }
+    .timeline-phase { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
 </head>
 <body>
+<div class="container">
+  <header>
+    <div class="tag">// Architecture Blueprint v1.0</div>
+    <h1>Movie Dialog <span>GPT</span></h1>
+    <p class="subtitle">end-to-end · ml-powered · production-grade · zero cost</p>
+  </header>
 
+  <div class="tabs">
+    <button class="tab active" onclick="showSection('overview')">Overview</button>
+    <button class="tab" onclick="showSection('flow')">Data Flow</button>
+    <button class="tab" onclick="showSection('repo')">Repo Structure</button>
+    <button class="tab" onclick="showSection('phases')">Dev Phases</button>
+    <button class="tab" onclick="showSection('costs')">Free Stack</button>
+    <button class="tab" onclick="showSection('checklist')">Checklist</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="section active" id="overview">
+    <div class="section-title">System Architecture</div>
+    <div class="arch-diagram">
+      <div class="diag-label">── CLIENT LAYER ──</div>
+      <div class="diag-row">
+        <div class="diag-box highlight-cyan">React UI<span class="diag-sub">Chat Interface</span></div>
+        <div class="diag-box highlight-cyan">Nginx<span class="diag-sub">Reverse Proxy</span></div>
+      </div>
+      <div class="diag-divider">↓</div>
+      <div class="diag-label">── API LAYER ──</div>
+      <div class="diag-row">
+        <div class="diag-box highlight-red">FastAPI<span class="diag-sub">REST Endpoints</span></div>
+        <div class="diag-box highlight-red">WebSocket<span class="diag-sub">Streaming</span></div>
+        <div class="diag-box highlight-red">Auth Middleware<span class="diag-sub">JWT</span></div>
+      </div>
+      <div class="diag-divider">↓</div>
+      <div class="diag-label">── MESSAGE QUEUE ──</div>
+      <div class="diag-row">
+        <div class="diag-box highlight-gold">Kafka<span class="diag-sub">Chat Events</span></div>
+        <div class="diag-box highlight-gold">Redis<span class="diag-sub">Session Cache</span></div>
+      </div>
+      <div class="diag-divider">↓</div>
+      <div class="diag-label">── ML LAYER ──</div>
+      <div class="diag-row">
+        <div class="diag-box highlight-purple">Model Service<span class="diag-sub">PyTorch → Transformer</span></div>
+        <div class="diag-box highlight-purple">MLflow<span class="diag-sub">Experiment Tracking</span></div>
+        <div class="diag-box highlight-purple">Apache Spark<span class="diag-sub">Data Processing</span></div>
+      </div>
+      <div class="diag-divider">↓</div>
+      <div class="diag-label">── STORAGE LAYER ──</div>
+      <div class="diag-row">
+        <div class="diag-box highlight-green">PostgreSQL<span class="diag-sub">Users, Conversations</span></div>
+        <div class="diag-box highlight-green">MongoDB<span class="diag-sub">Raw Dialog Corpus</span></div>
+        <div class="diag-box highlight-green">MinIO / S3<span class="diag-sub">Model Artifacts</span></div>
+      </div>
+      <div class="diag-divider">↓</div>
+      <div class="diag-label">── INFRA LAYER ──</div>
+      <div class="diag-row">
+        <div class="diag-box">Docker<span class="diag-sub">Containerization</span></div>
+        <div class="diag-box">Kubernetes<span class="diag-sub">Orchestration (k3s)</span></div>
+        <div class="diag-box">GitHub Actions<span class="diag-sub">CI/CD</span></div>
+        <div class="diag-box">Grafana<span class="diag-sub">Observability</span></div>
+      </div>
+    </div>
+
+    <div class="section-title">Component Breakdown</div>
+    <div class="arch-grid">
+      <div class="arch-col">
+        <div class="arch-col-header" style="color: var(--cyan)">Frontend & API</div>
+        <div class="layer cyan">
+          <div class="layer-title">React <span class="layer-badge free">free</span></div>
+          <div class="layer-detail">Chat UI with streaming responses. Think iMessage meets movie aesthetic. Vite for dev, served via Nginx.</div>
+        </div>
+        <div class="layer cyan">
+          <div class="layer-title">FastAPI</div>
+          <div class="layer-detail">REST + WebSocket. Phases: mock responses → real model. Pydantic for validation, async everywhere.</div>
+        </div>
+        <div class="layer cyan">
+          <div class="layer-title">Nginx</div>
+          <div class="layer-detail">Reverse proxy, SSL termination, static file serving. Free via Docker container.</div>
+        </div>
+      </div>
+      <div class="arch-col">
+        <div class="arch-col-header" style="color: var(--gold)">Data & ML Pipeline</div>
+        <div class="layer gold">
+          <div class="layer-title">Apache Spark <span class="layer-badge free">free</span></div>
+          <div class="layer-detail">Process Movie Dialog Corpus. Clean & tokenize at scale. Use PySpark locally or on free Colab/Databricks tier.</div>
+        </div>
+        <div class="layer gold">
+          <div class="layer-title">MongoDB</div>
+          <div class="layer-detail">Store raw corpus, conversation pairs. Atlas free tier: 512MB — enough for corpus.</div>
+        </div>
+        <div class="layer gold">
+          <div class="layer-title">Kafka</div>
+          <div class="layer-detail">Chat message queue. User sends message → Kafka topic → model consumer → response. Confluent free tier.</div>
+        </div>
+        <div class="layer gold">
+          <div class="layer-title">Redis</div>
+          <div class="layer-detail">Cache conversation context. Session state, rate limiting. Upstash free tier: 10k commands/day.</div>
+        </div>
+      </div>
+      <div class="arch-col">
+        <div class="arch-col-header" style="color: var(--purple)">ML & Observability</div>
+        <div class="layer purple">
+          <div class="layer-title">MLflow <span class="layer-badge free">free</span></div>
+          <div class="layer-detail">Track experiments, model versions, hyperparams. Self-host locally. Log LSTM → Transformer progression.</div>
+        </div>
+        <div class="layer purple">
+          <div class="layer-title">PyTorch Model</div>
+          <div class="layer-detail">Phase 1: mock. Phase 2: LSTM (you've done this!). Phase 3: Transformer/GPT-2 fine-tune on corpus.</div>
+        </div>
+        <div class="layer purple">
+          <div class="layer-title">Grafana + Prometheus</div>
+          <div class="layer-detail">Monitor API latency, model inference time, Kafka lag, Redis hits. Grafana Cloud free tier: 10k metrics.</div>
+        </div>
+        <div class="layer purple">
+          <div class="layer-title">PostgreSQL</div>
+          <div class="layer-detail">Users, conversation history, feedback ratings. Supabase free tier: 500MB. Alembic for migrations.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA FLOW -->
+  <div class="section" id="flow">
+    <div class="section-title">Request Flow — User Sends a Message</div>
+    <div class="flow">
+      <div class="flow-node">
+        <span class="flow-node-icon">💬</span>
+        <div class="flow-node-name">User</div>
+        <div class="flow-node-tech">React UI</div>
+      </div>
+      <div class="flow-arrow">→ WS →</div>
+      <div class="flow-node">
+        <span class="flow-node-icon">⚡</span>
+        <div class="flow-node-name">FastAPI</div>
+        <div class="flow-node-tech">Validate + Auth</div>
+      </div>
+      <div class="flow-arrow">→ pub →</div>
+      <div class="flow-node">
+        <span class="flow-node-icon">📨</span>
+        <div class="flow-node-name">Kafka</div>
+        <div class="flow-node-tech">chat.messages</div>
+      </div>
+      <div class="flow-arrow">→ sub →</div>
+      <div class="flow-node">
+        <span class="flow-node-icon">🧠</span>
+        <div class="flow-node-name">Model Worker</div>
+        <div class="flow-node-tech">PyTorch</div>
+      </div>
+      <div class="flow-arrow">→ cache →</div>
+      <div class="flow-node">
+        <span class="flow-node-icon">⚡</span>
+        <div class="flow-node-name">Redis</div>
+        <div class="flow-node-tech">Context Cache</div>
+      </div>
+      <div class="flow-arrow">→ stream →</div>
+      <div class="flow-node">
+        <span class="flow-node-icon">💬</span>
+        <div class="flow-node-name">Response</div>
+        <div class="flow-node-tech">Token Stream</div>
+      </div>
+    </div>
+
+    <div class="section-title">Training Data Pipeline</div>
+    <div class="flow">
+      <div class="flow-node">
+        <span class="flow-node-icon">📁</span>
+        <div class="flow-node-name">Kaggle Corpus</div>
+        <div class="flow-node-tech">Raw CSV</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <span class="flow-node-icon">🔥</span>
+        <div class="flow-node-name">PySpark</div>
+        <div class="flow-node-tech">Clean + Tokenize</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <span class="flow-node-icon">🍃</span>
+        <div class="flow-node-name">MongoDB</div>
+        <div class="flow-node-tech">Processed Pairs</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <span class="flow-node-icon">🏋️</span>
+        <div class="flow-node-name">Train Loop</div>
+        <div class="flow-node-tech">PyTorch</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <span class="flow-node-icon">📊</span>
+        <div class="flow-node-name">MLflow</div>
+        <div class="flow-node-tech">Log Metrics</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <span class="flow-node-icon">📦</span>
+        <div class="flow-node-name">MinIO</div>
+        <div class="flow-node-tech">Model Artifact</div>
+      </div>
+    </div>
+
+    <div class="section-title">CI/CD Pipeline</div>
+    <div class="flow">
+      <div class="flow-node">
+        <span class="flow-node-icon">📝</span>
+        <div class="flow-node-name">git push</div>
+        <div class="flow-node-tech">feature branch</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <span class="flow-node-icon">🔄</span>
+        <div class="flow-node-name">GH Actions</div>
+        <div class="flow-node-tech">Test + Lint</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <span class="flow-node-icon">🐳</span>
+        <div class="flow-node-name">Docker Build</div>
+        <div class="flow-node-tech">GHCR Registry</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <span class="flow-node-icon">☸️</span>
+        <div class="flow-node-name">k3s Deploy</div>
+        <div class="flow-node-tech">Rolling Update</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <span class="flow-node-icon">📡</span>
+        <div class="flow-node-name">Grafana</div>
+        <div class="flow-node-tech">Health Check</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPO STRUCTURE -->
+  <div class="section" id="repo">
+    <div class="section-title">Recommended Repository Structure</div>
+    <div class="repo">
+      <div><span class="dir">movie-dialog-gpt/</span></div>
+      <div class="indent1"><span class="dir">.github/</span></div>
+      <div class="indent2"><span class="dir">workflows/</span></div>
+      <div class="indent3"><span class="file">ci.yml</span>  <span class="comment"># test + lint on PR</span></div>
+      <div class="indent3"><span class="file">deploy.yml</span>  <span class="comment"># build + push image → k8s deploy</span></div>
+      <div class="indent3"><span class="file">ml-pipeline.yml</span>  <span class="comment"># trigger training run</span></div>
+      <br>
+      <div class="indent1"><span class="dir">backend/</span>  <span class="comment"># FastAPI service</span></div>
+      <div class="indent2"><span class="dir">app/</span></div>
+      <div class="indent3"><span class="file">main.py</span>  <span class="comment"># app init, lifespan, routers</span></div>
+      <div class="indent3"><span class="file">config.py</span>  <span class="comment"># pydantic-settings env config</span></div>
+      <div class="indent3"><span class="dir">routers/</span>  <span class="comment"># chat.py, health.py, auth.py</span></div>
+      <div class="indent3"><span class="dir">services/</span>  <span class="comment"># model_service.py, kafka_service.py</span></div>
+      <div class="indent3"><span class="dir">models/</span>  <span class="comment"># SQLAlchemy ORM models</span></div>
+      <div class="indent3"><span class="dir">schemas/</span>  <span class="comment"># Pydantic request/response schemas</span></div>
+      <div class="indent3"><span class="dir">db/</span>  <span class="comment"># session.py, alembic migrations</span></div>
+      <div class="indent2"><span class="file">Dockerfile</span></div>
+      <div class="indent2"><span class="file">requirements.txt</span></div>
+      <br>
+      <div class="indent1"><span class="dir">frontend/</span>  <span class="comment"># React + Vite</span></div>
+      <div class="indent2"><span class="dir">src/</span></div>
+      <div class="indent3"><span class="dir">components/</span>  <span class="comment"># ChatWindow, MessageBubble, etc.</span></div>
+      <div class="indent3"><span class="dir">hooks/</span>  <span class="comment"># useWebSocket, useChat</span></div>
+      <div class="indent3"><span class="dir">store/</span>  <span class="comment"># Zustand state management</span></div>
+      <div class="indent2"><span class="file">Dockerfile</span></div>
+      <div class="indent2"><span class="file">nginx.conf</span></div>
+      <br>
+      <div class="indent1"><span class="dir">ml/</span>  <span class="comment"># All ML code</span></div>
+      <div class="indent2"><span class="dir">data/</span></div>
+      <div class="indent3"><span class="file">ingest.py</span>  <span class="comment"># Download from Kaggle API</span></div>
+      <div class="indent3"><span class="file">preprocess.py</span>  <span class="comment"># PySpark cleaning pipeline</span></div>
+      <div class="indent3"><span class="file">dataset.py</span>  <span class="comment"># PyTorch Dataset class</span></div>
+      <div class="indent2"><span class="dir">models/</span></div>
+      <div class="indent3"><span class="file">lstm_model.py</span>  <span class="comment"># Your existing work ✅</span></div>
+      <div class="indent3"><span class="file">transformer.py</span>  <span class="comment"># Custom GPT-like model</span></div>
+      <div class="indent3"><span class="file">gpt2_finetune.py</span>  <span class="comment"># HuggingFace fine-tune</span></div>
+      <div class="indent2"><span class="file">train.py</span>  <span class="comment"># Training loop + MLflow logging</span></div>
+      <div class="indent2"><span class="file">evaluate.py</span>  <span class="comment"># BLEU, perplexity metrics</span></div>
+      <div class="indent2"><span class="file">serve.py</span>  <span class="comment"># Model as inference service</span></div>
+      <br>
+      <div class="indent1"><span class="dir">infra/</span>  <span class="comment"># All infra-as-code</span></div>
+      <div class="indent2"><span class="dir">k8s/</span></div>
+      <div class="indent3"><span class="file">backend-deployment.yaml</span></div>
+      <div class="indent3"><span class="file">frontend-deployment.yaml</span></div>
+      <div class="indent3"><span class="file">kafka-statefulset.yaml</span></div>
+      <div class="indent2"><span class="file">docker-compose.yml</span>  <span class="comment"># Full local dev stack</span></div>
+      <div class="indent2"><span class="file">docker-compose.dev.yml</span>  <span class="comment"># Hot-reload override</span></div>
+      <br>
+      <div class="indent1"><span class="dir">monitoring/</span></div>
+      <div class="indent2"><span class="file">prometheus.yml</span></div>
+      <div class="indent2"><span class="dir">grafana/dashboards/</span>  <span class="comment"># JSON dashboard configs</span></div>
+      <br>
+      <div class="indent1"><span class="dir">docs/</span></div>
+      <div class="indent2"><span class="file">architecture.md</span></div>
+      <div class="indent2"><span class="file">local-setup.md</span></div>
+      <div class="indent2"><span class="file">ml-training-guide.md</span></div>
+      <div class="indent2"><span class="file">api-reference.md</span>  <span class="comment"># Auto-gen from FastAPI /docs</span></div>
+      <br>
+      <div class="indent1"><span class="file">docker-compose.yml</span>  <span class="comment"># Bring up everything locally</span></div>
+      <div class="indent1"><span class="file">Makefile</span>  <span class="comment"># make dev, make test, make train</span></div>
+      <div class="indent1"><span class="file">README.md</span></div>
+      <div class="indent1"><span class="file">.env.example</span></div>
+    </div>
+  </div>
+
+  <!-- PHASES -->
+  <div class="section" id="phases">
+    <div class="section-title">Development Phases</div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-phase">
+          <div class="timeline-phase-num">01</div>
+          <div class="timeline-phase-name">Foundation</div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-title">Scaffold + Mock Backend</div>
+          <div class="timeline-desc">Set up monorepo, FastAPI with mock responses, React chat UI. Docker-compose to run everything. Basic PostgreSQL schema for users + conversations. GitHub Actions for lint/test on push.</div>
+          <div class="timeline-tools">
+            <span class="tool-chip">FastAPI</span>
+            <span class="tool-chip">React + Vite</span>
+            <span class="tool-chip">PostgreSQL</span>
+            <span class="tool-chip">Docker Compose</span>
+            <span class="tool-chip">GitHub Actions</span>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-phase">
+          <div class="timeline-phase-num">02</div>
+          <div class="timeline-phase-name">Data Pipeline</div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-title">Corpus Ingestion & Processing</div>
+          <div class="timeline-desc">Download Movie Dialog Corpus via Kaggle API. Run PySpark cleaning pipeline — remove HTML, normalize, extract Q&A pairs. Store processed pairs in MongoDB. This gives you a proper ML dataset.</div>
+          <div class="timeline-tools">
+            <span class="tool-chip">PySpark</span>
+            <span class="tool-chip">MongoDB Atlas</span>
+            <span class="tool-chip">Kaggle API</span>
+            <span class="tool-chip">Python scripts</span>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-phase">
+          <div class="timeline-phase-num">03</div>
+          <div class="timeline-phase-name">Messaging Layer</div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-title">Kafka + Redis Integration</div>
+          <div class="timeline-desc">Replace direct FastAPI → model call with async Kafka queue. Messages published to chat.input topic, model worker consumes and publishes to chat.output. Redis for caching conversation context window (last N turns).</div>
+          <div class="timeline-tools">
+            <span class="tool-chip">Kafka (Confluent)</span>
+            <span class="tool-chip">Redis (Upstash)</span>
+            <span class="tool-chip">aiokafka</span>
+            <span class="tool-chip">aioredis</span>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-phase">
+          <div class="timeline-phase-num">04</div>
+          <div class="timeline-phase-name">ML Training</div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-title">Train & Track Your Model</div>
+          <div class="timeline-desc">Start with your LSTM next-word predictor on the corpus. Log everything to MLflow. Progress to seq2seq. Then attempt Transformer from scratch or fine-tune GPT-2 on corpus (HuggingFace). Save best model to MinIO/local.</div>
+          <div class="timeline-tools">
+            <span class="tool-chip">PyTorch</span>
+            <span class="tool-chip">MLflow</span>
+            <span class="tool-chip">HuggingFace</span>
+            <span class="tool-chip">Google Colab</span>
+            <span class="tool-chip">MinIO</span>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-phase">
+          <div class="timeline-phase-num">05</div>
+          <div class="timeline-phase-name">Observability</div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-title">Monitoring + Dashboards</div>
+          <div class="timeline-desc">Add Prometheus metrics to FastAPI (latency, errors, model inference time). Set up Grafana dashboards for API health, Kafka lag, Redis hit rate, model performance over time. Alerting on key thresholds.</div>
+          <div class="timeline-tools">
+            <span class="tool-chip">Prometheus</span>
+            <span class="tool-chip">Grafana Cloud</span>
+            <span class="tool-chip">prometheus-fastapi-instrumentator</span>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-phase">
+          <div class="timeline-phase-num">06</div>
+          <div class="timeline-phase-name">Deployment</div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-title">Kubernetes + Cloud Deploy</div>
+          <div class="timeline-desc">Use k3s (lightweight K8s) locally first. Deploy to Oracle Cloud Free Tier (2 VMs, 4 ARM cores, 24GB RAM — completely free forever). Full CI/CD pipeline: push to main → build image → push to GHCR → kubectl rollout.</div>
+          <div class="timeline-tools">
+            <span class="tool-chip">k3s / k8s</span>
+            <span class="tool-chip">Oracle Cloud Free</span>
+            <span class="tool-chip">GHCR</span>
+            <span class="tool-chip">Helm Charts</span>
+            <span class="tool-chip">Let's Encrypt SSL</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COSTS -->
+  <div class="section" id="costs">
+    <div class="section-title">Free Tier Stack — Zero Cost</div>
+    <div class="cost-grid">
+      <div class="cost-card">
+        <div class="cost-card-title">Infrastructure</div>
+        <div class="cost-item">
+          <span>Cloud Hosting</span>
+          <span class="cost-free">Oracle Cloud Free ✓</span>
+        </div>
+        <div class="cost-item">
+          <span>Container Registry</span>
+          <span class="cost-free">GitHub GHCR ✓</span>
+        </div>
+        <div class="cost-item">
+          <span>CI/CD</span>
+          <span class="cost-free">GitHub Actions ✓</span>
+        </div>
+        <div class="cost-item">
+          <span>Kubernetes</span>
+          <span class="cost-free">k3s self-hosted ✓</span>
+        </div>
+        <div class="cost-item">
+          <span>SSL Cert</span>
+          <span class="cost-free">Let's Encrypt ✓</span>
+        </div>
+      </div>
+      <div class="cost-card">
+        <div class="cost-card-title">Data & Messaging</div>
+        <div class="cost-item">
+          <span>MongoDB</span>
+          <span class="cost-free">Atlas Free 512MB ✓</span>
+        </div>
+        <div class="cost-item">
+          <span>PostgreSQL</span>
+          <span class="cost-free">Supabase Free ✓</span>
+        </div>
+        <div class="cost-item">
+          <span>Redis</span>
+          <span class="cost-free">Upstash Free ✓</span>
+        </div>
+        <div class="cost-item">
+          <span>Kafka</span>
+          <span class="cost-free">Confluent Free ✓</span>
+        </div>
+        <div class="cost-item">
+          <span>Object Storage</span>
+          <span class="cost-free">MinIO self-hosted ✓</span>
+        </div>
+      </div>
+      <div class="cost-card">
+        <div class="cost-card-title">ML & Monitoring</div>
+        <div class="cost-item">
+          <span>MLflow</span>
+          <span class="cost-free">Self-hosted ✓</span>
+        </div>
+        <div class="cost-item">
+          <span>Grafana</span>
+          <span class="cost-free">Cloud Free Tier ✓</span>
+        </div>
+        <div class="cost-item">
+          <span>GPU Training</span>
+          <span class="cost-free">Google Colab Free ✓</span>
+        </div>
+        <div class="cost-item">
+          <span>Model Hosting</span>
+          <span class="cost-free">Self-hosted ✓</span>
+        </div>
+      </div>
+      <div class="cost-card">
+        <div class="cost-card-title">Watch Out For (Costs $)</div>
+        <div class="cost-item">
+          <span>AWS / GCP / Azure</span>
+          <span class="cost-paid">Avoid for now ⚠</span>
+        </div>
+        <div class="cost-item">
+          <span>OpenAI API</span>
+          <span class="cost-paid">Not needed ⚠</span>
+        </div>
+        <div class="cost-item">
+          <span>Datadog</span>
+          <span class="cost-paid">Use Grafana instead ⚠</span>
+        </div>
+        <div class="cost-item">
+          <span>Confluent (beyond free)</span>
+          <span class="cost-paid">Or self-host Kafka ⚠</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="section" id="checklist">
+    <div class="section-title">Project Checklist — Click to Track Progress</div>
+    <div class="checklist" id="checklist-container">
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">Initialize monorepo with backend/, frontend/, ml/, infra/ structure</div><div class="check-meta">PHASE 1 · Foundation</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">FastAPI app with /chat endpoint returning mock movie responses</div><div class="check-meta">PHASE 1 · Foundation</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">React chat UI with WebSocket connection to backend</div><div class="check-meta">PHASE 1 · Foundation</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">docker-compose.yml that starts everything with one command</div><div class="check-meta">PHASE 1 · Foundation</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">GitHub Actions CI: lint + pytest on every PR</div><div class="check-meta">PHASE 1 · Foundation</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">Download Movie Dialog Corpus via Kaggle API</div><div class="check-meta">PHASE 2 · Data Pipeline</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">PySpark preprocessing: clean, normalize, extract Q&A pairs</div><div class="check-meta">PHASE 2 · Data Pipeline</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">Load processed data into MongoDB Atlas free tier</div><div class="check-meta">PHASE 2 · Data Pipeline</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">Integrate Kafka: FastAPI → topic → model consumer</div><div class="check-meta">PHASE 3 · Messaging</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">Redis context cache: store last N conversation turns</div><div class="check-meta">PHASE 3 · Messaging</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">Train LSTM model on corpus, log to MLflow</div><div class="check-meta">PHASE 4 · ML Training</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">Build custom Transformer / fine-tune GPT-2 on dialog corpus</div><div class="check-meta">PHASE 4 · ML Training</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">Swap mock responses for real model inference in backend</div><div class="check-meta">PHASE 4 · ML Training</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">Prometheus metrics in FastAPI + Grafana dashboard</div><div class="check-meta">PHASE 5 · Observability</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">Deploy to Oracle Cloud Free Tier with k3s</div><div class="check-meta">PHASE 6 · Deployment</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">CD pipeline: git push → Docker build → k8s rolling deploy</div><div class="check-meta">PHASE 6 · Deployment</div></div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="checkbox"></div>
+        <div><div class="check-label">Write docs/: architecture, local setup, API reference, ML guide</div><div class="check-meta">Documentation</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
+  function toggleCheck(el) {
+    el.classList.toggle('done');
+    el.querySelector('.checkbox').textContent = el.classList.contains('done') ? '✓' : '';
+  }
+</script>
 </body>
 </html>
