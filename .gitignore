@@ -4,7 +4,7 @@ __pycache__/
 .env
 .idea/
 node_modules/
-data/
+ml/artifacts/
 models/
 *.pt
 *.pth
