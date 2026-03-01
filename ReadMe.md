@@ -1,4 +1,4 @@
-# 🎬 MovieGPT — Conversational Movie Dialogue AI
+# 🎬 DialogGPT — Conversational Dialogue Generator AI
 
 👉 https://codingblood.github.io/DialogGPT/
 
