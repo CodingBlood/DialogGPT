@@ -26,9 +26,12 @@ This repo includes:
 
 ## 🎯 Dataset
 
-This project uses the **Movie Dialog Corpus** dataset from Kaggle:
+This project uses the **MCU Dialog Corpus** dataset from Kaggle:
 
-👉 https://www.kaggle.com/datasets/Cornell-University/movie-dialog-corpus/code
+👉 #%% md
+# Fetching DataSet from Kaggle
+
+- https://www.kaggle.com/datasets/phiitm/marvel-cinematic-universe-dialogue-dataset/code
 
 The dataset contains movie conversations and pairs of dialogue exchanges, which are preprocessed and used for training conversational models.
 
