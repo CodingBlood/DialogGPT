@@ -1,0 +1,29 @@
+[2026-03-03 13:10:40,030: INFO: common: yaml file: config/config.yaml loaded successfully]
+[2026-03-03 13:10:40,031: INFO: common: yaml file: params.yaml loaded successfully]
+[2026-03-03 13:10:40,032: INFO: common: created directory at: artifacts]
+[2026-03-03 13:10:40,032: INFO: common: created directory at: artifacts/data_ingestion]
+[2026-03-03 13:10:42,068: INFO: 427721346: artifacts/data_ingestion/archive.zip download! with following info: 
+Content-Type: application/zip
+X-GUploader-UploadID: AGQBYWx_N0zDprmzM1Dfj48_NuCkbL_Ro5ysunbQj80gq2cyPDzF2ar9Rj3P56DenD5VC3QsBjmpzqM
+Expires: Tue, 03 Mar 2026 07:40:40 GMT
+Date: Tue, 03 Mar 2026 07:40:40 GMT
+Cache-Control: private, max-age=0
+Last-Modified: Sat, 30 May 2020 08:46:16 GMT
+ETag: "0a61a6cd9ebe2d7ae210149a3b5a291c"
+x-goog-generation: 1590828376634994
+x-goog-metageneration: 1
+x-goog-stored-content-encoding: identity
+x-goog-stored-content-length: 484898
+x-goog-hash: crc32c=m0Fm4w==
+x-goog-hash: md5=CmGmzZ6+LXriEBSaO1opHA==
+x-goog-storage-class: MULTI_REGIONAL
+Accept-Ranges: bytes
+Content-Length: 484898
+Access-Control-Allow-Origin: *
+Access-Control-Expose-Headers: Content-Type
+Access-Control-Expose-Headers: User-Agent
+Server: UploadServer
+Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+Connection: close
+
+]
