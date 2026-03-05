@@ -1,0 +1,42 @@
+.round-button {
+  width: 60px; /* Slightly increased button size to house a bigger arrow */
+  height: 60px;
+  background-color: orange;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+
+  /* Centering and Animation */
+  margin: 20px auto 0;
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
+  animation-delay: 2.2s;
+}
+
+/* This targets the arrow icon specifically */
+.round-button svg {
+  width: 32px;  /* Increased from 24px */
+  height: 32px; /* Increased from 24px */
+  stroke-width: 5; /* Makes the arrow lines look bolder and cleaner */
+}
+
+.round-button:hover {
+  background-color: #e67e00;
+  transform: scale(1.1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
