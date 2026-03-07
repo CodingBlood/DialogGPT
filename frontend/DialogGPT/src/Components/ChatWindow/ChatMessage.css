@@ -1,0 +1,57 @@
+/* 1. Base Container */
+.message-container {
+    display: flex;
+    margin-bottom: 30px;
+    gap: 15px;
+    width: 100%; /* Important for alignment */
+    align-items: flex-start; 
+}
+
+/* 2. Bot Layout (Icon Left, Text Right) */
+.message-container.bot {
+    flex-direction: row; 
+    justify-content: flex-start;
+}
+
+/* 3. User Layout (Text Left, Icon Right) */
+.message-container.user {
+    flex-direction: row; /* Icon and text in a line */
+    justify-content: flex-end; /* Pushes the pair to the right edge */
+}
+
+/* 4. Ensure the Icon is Visible */
+.avatar-wrapper {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0; /* Prevents the icon from squishing to 0px */
+    border-radius: 50%;
+    border: 2px solid orange;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 165, 0, 0.05);
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+/* 5. Bubble Specifics */
+.message-bubble {
+    padding: 14px 22px;
+    font-size: 1rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+    max-width: 70%; /* Prevents text from hitting the other side */
+}
+
+.bot .message-bubble {
+    background-color: #252525;
+    color: #efefef;
+    border-radius: 0px 18px 18px 18px;
+}
+
+.user .message-bubble {
+    background-color: orange;
+    color: white;
+    border-radius: 18px 0px 18px 18px;
+    /* No 'order' needed if we just place the HTML correctly */
+}

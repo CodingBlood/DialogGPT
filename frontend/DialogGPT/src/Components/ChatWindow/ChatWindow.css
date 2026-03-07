@@ -1,0 +1,91 @@
+:root {
+  --brand-orange: orange;
+  --input-bg: #1e1e1e;
+  --bg-main: #121212;
+}
+
+.chat-wrapper {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 80%; /* Matches your 25% sidebar */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-main);
+}
+
+/* Scrollable Region */
+.chat-history {
+  flex: 1; /* Takes up all available space above the input */
+  overflow-y: auto; /* Makes it scrollable */
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom Scrollbar for a sleek look */
+.chat-history::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-history::-webkit-scrollbar-thumb {
+  background: rgba(255, 165, 0, 0.2);
+  border-radius: 10px;
+}
+
+/* Fixed Bottom Bar Section */
+.chat-input-container {
+  padding: 20px 40px 40px 40px; /* Padding at bottom for "floating" feel */
+  background: linear-gradient(transparent, var(--bg-main) 80%);
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  background-color: var(--input-bg);
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  border-radius: 12px;
+  padding: 10px 15px;
+  transition: border 0.3s ease;
+}
+
+.input-box:focus-within {
+  border: 1px solid var(--brand-orange);
+}
+
+.input-box input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  padding: 10px;
+  outline: none;
+}
+
+.send-btn {
+  background: transparent;
+  border: none;
+  color: var(--brand-orange);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.send-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.send-btn:hover {
+  transform: scale(1.1);
+}
+
+.chat-placeholder {
+  color: #555;
+  text-align: center;
+  margin-top: auto; /* Keeps text at bottom of scroll area */
+  font-style: italic;
+}
