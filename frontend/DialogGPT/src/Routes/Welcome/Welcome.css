@@ -1,0 +1,20 @@
+.landing-page-full {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw; /* Force full width */
+    height: 100vh;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;     /* Center vertically */
+    background-color: #121212;
+    z-index: 5000;
+}
+
+.welcome-container {
+    /* Ensure no margins are pushing the text */
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

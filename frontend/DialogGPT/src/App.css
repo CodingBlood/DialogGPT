@@ -1,42 +1,70 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+:root {
+  --sidebar-width: 20%;
+  --brand-orange: orange;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* 1. Sidebar - Fixed to the left */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: var(--sidebar-width);
+  background-color: #121212;
+  z-index: 2000;
+  transition: transform 0.4s ease;
+  border-right: 1px solid rgba(255, 165, 0, 0.1);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+/* 2. Chat Wrapper - Precise alignment */
+/* desktop logic */
+.chat-wrapper {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 80%; /* Only takes 80% on desktop */
+  height: 100vh;
+  background-color: #121212;
+  transition: all 0.4s ease;
+}
+
+/* RESPONSIVE FIX (Triggering at 1024px) */
+@media (max-width: 1024px) {
+  .chat-wrapper {
+    /* Anchor to BOTH sides to kill the gaps */
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
   }
-  to {
-    transform: rotate(360deg);
+
+  .sidebar {
+    width: 300px;
+    transform: translateX(-100%); /* Slide it off-screen */
+  }
+
+  .sidebar.active {
+    transform: translateX(0); /* Slide back in */
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+/* Update this part in App.css */
+.app-layout {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+}
+
+/* Ensure the main container in the CHAT page handles the 20% gap */
+.chat-page-container {
+  margin-left: 20%;
+  width: 80%;
+  height: 100vh;
+}
+
+@media (max-width: 1024px) {
+  .chat-page-container {
+    margin-left: 0;
+    width: 100%;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }
