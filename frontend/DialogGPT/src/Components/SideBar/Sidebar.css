@@ -1,179 +1,100 @@
-:root {
-  --brand-orange: orange;
-  --bg-dark: #121212;
-  --text-gray: #888;
-  --transition-speed: 0.4s;
-  --sidebar-width: 20%; /* Updated to exactly 20% */
-}
-
-/* 1. Main Sidebar Layout */
 .sidebar {
   position: fixed;
   left: 0;
   top: 0;
   height: 100vh;
   width: var(--sidebar-width);
-  background-color: var(--bg-dark);
-  padding: 50px 30px;
+  background-color: var(--surface);
+  padding: 40px 0; /* Changed padding to 0 on sides for NavItem bleed */
   z-index: 2000;
-  box-sizing: border-box;
-  border-right: 1px solid rgba(255, 165, 0, 0.1);
-  transition: transform var(--transition-speed) cubic-bezier(0.77, 0.2, 0.05, 1.0);
+  border-right: 1px solid var(--border);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
+  backdrop-filter: blur(10px);
 }
 
-/* 2. Brand Section */
 .brand-container {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 60px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 165, 0, 0.15);
-  white-space: nowrap;
+  gap: 15px;
+  padding: 0 30px 30px 30px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--border);
 }
 
 .logo-svg {
-  width: 32px;
-  height: 32px;
-  color: var(--brand-orange);
-  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  color: var(--accent);
 }
 
 .company-name {
-  font-size: 1.4rem;
-  color: var(--brand-orange);
-  font-weight: 300;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.2rem;
+  color: var(--text);
   letter-spacing: 1px;
-  margin: 0;
 }
 
 .bold-gpt {
+  color: var(--accent);
   font-weight: 800;
 }
 
-/* 3. Navigation Items */
 .nav-list {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-left: -30px;
-  margin-right: -30px;
 }
 
-.nav-item {
-  color: var(--text-gray);
-  padding: 18px 40px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  position: relative;
-  width: 100%;
-  box-sizing: border-box;
+.sidebar-footer {
+  padding: 20px 30px;
+  border-top: 1px solid var(--border);
+  opacity: 0.5;
 }
 
-.nav-item:hover {
-  color: white;
-  background-color: rgba(255, 165, 0, 0.15);
-}
-
-.nav-item::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 4px;
-  background-color: var(--brand-orange);
-  transform: scaleY(0);
-  transition: transform 0.3s ease;
-}
-
-.nav-item:hover::after {
-  transform: scaleY(1);
-}
-
-/* 4. Hamburger Menu Icon */
+/* --- Hamburger Menu --- */
 .hamburger {
   display: none;
   position: fixed;
-  top: 25px;
-  right: 25px;
+  top: 20px;
+  right: 20px;
   z-index: 3000;
   cursor: pointer;
-  background: var(--bg-dark);
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 165, 0, 0.2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 12px;
+  transition: border-color 0.3s;
+}
+
+.hamburger:hover {
+  border-color: var(--accent);
 }
 
 .line {
-  width: 25px;
-  height: 2px;
-  background-color: var(--brand-orange);
+  width: 22px;
+  height: 1px; /* Thinner lines for a tech look */
+  background-color: var(--text);
   margin: 6px 0;
-  transition: 0.4s ease;
+  transition: 0.3s;
 }
 
-/* 5. RESPONSIVENESS - Triggering Earlier */
-/* Changed from 768px to 1024px so it collapses on tablets/small laptops */
 @media (max-width: 1024px) {
   .sidebar {
-    width: 300px; /* Use a fixed width when it's a slide-out menu */
+    width: 280px;
     transform: translateX(-100%);
   }
 
   .sidebar.active {
     transform: translateX(0);
-    box-shadow: 10px 0 30px rgba(0,0,0,0.7);
+    box-shadow: 20px 0 60px rgba(0,0,0,0.8);
   }
 
   .hamburger {
     display: block;
   }
 
-  .line.open:nth-child(1) {
-    transform: rotate(-45deg) translate(-5px, 6px);
-  }
-  .line.open:nth-child(2) {
-    opacity: 0;
-  }
-  .line.open:nth-child(3) {
-    transform: rotate(45deg) translate(-5px, -6px);
-  }
-}
-
-/* 6. Layout Adjustment for ChatWindow */
-.chat-wrapper {
-  position: fixed;
-  right: 0;
-  top: 0;
-  /* Desktop: Occupy remaining 80% */
-  width: 80%;
-  height: 100vh;
-  transition: all 0.4s ease;
-  background-color: #121212;
-}
-
-/* RESPONSIVE: When screens are 1024px or smaller */
-@media (max-width: 1024px) {
-  .chat-wrapper {
-    width: 100%; /* Expand to cover the whole screen */
-    margin-left: 0 !important; /* Remove any leftover margins */
-    left: 0; /* Anchor to the left edge */
-  }
-
-  .sidebar {
-    /* Ensure the border-right doesn't peek out when hidden */
-    border-right: none;
-    width: 300px; /* Slide-out menu width */
-  }
-
-  /* Add the border back ONLY when the sidebar is active/open */
-  .sidebar.active {
-    border-right: 1px solid rgba(255, 165, 0, 0.2);
-  }
+  .hamburger.active .line:nth-child(1) { transform: translateY(7px) rotate(45deg); background-color: var(--accent); }
+  .hamburger.active .line:nth-child(2) { opacity: 0; }
+  .hamburger.active .line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background-color: var(--accent); }
 }
