@@ -1,0 +1,78 @@
+.index-container {
+    min-height: 100vh;
+    background-color: #121212; /* Match your app background */
+    color: white;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.index-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.highlight {
+    color: #ff0000;
+}
+
+/* 1. Grid Layout */
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* 2. Project Card Style */
+.project-card {
+    background-color: #1e1e1e;
+    border: 1px solid rgba(255, 165, 0, 0.1); /* Subtle orange border */
+    border-radius: 20px; /* Rounded corners as requested */
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 165, 0, 0.1);
+}
+
+.project-card h2 {
+    color: #ff0000;
+    margin-top: 0;
+    font-size: 1.8rem;
+}
+
+.project-card p {
+    color: #bbb;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.card-links {
+    margin-bottom: 25px;
+}
+
+.repo-link {
+    color: #888;
+    text-decoration: none;
+    font-size: 0.9rem;
+    border-bottom: 1px solid transparent;
+    transition: color 0.3s ease;
+}
+
+.repo-link:hover {
+    color: #ff0000;
+    border-bottom: 1px solid #ff0000;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: flex-end; /* Pushes button to the bottom-right */
+}

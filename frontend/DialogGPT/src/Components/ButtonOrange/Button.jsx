@@ -1,9 +1,13 @@
 import React from 'react';
 import './Button.css';
 
-const Button = ({ onClick }) => {
+const Button = ({ onClick, delay = "1.8s" }) => {
   return (
-    <button className="round-button" onClick={onClick}>
+    <button
+      className="round-button"
+      onClick={onClick}
+      style={{ animationDelay: delay }}
+    >
       <svg
         viewBox="0 0 24 24"
         fill="none"

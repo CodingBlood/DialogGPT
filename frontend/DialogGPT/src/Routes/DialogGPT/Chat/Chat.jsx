@@ -1,5 +1,5 @@
-import Sidebar from "../../Components/SideBar/Sidebar.jsx"; // Fixed spelling from Sidebas
-import ChatWindow from "../../Components/ChatWindow/ChatWindow.jsx";
+import Sidebar from "../../../Components/SideBar/Sidebar.jsx"; // Fixed spelling from Sidebas
+import ChatWindow from "../../../Components/ChatWindow/ChatWindow.jsx";
 
 export default function Chat() {
     return (

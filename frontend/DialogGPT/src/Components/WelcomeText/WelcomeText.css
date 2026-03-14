@@ -1,26 +1,39 @@
-.typewriter h1 {
-  overflow: hidden; /* Ensures the content is not revealed until the animation */
-  border-right: .15em solid orange; /* The typwriter cursor */
-  white-space: nowrap; /* Keeps the content on a single line */
-  margin: 0 auto; /* Gives that scrolling effect as the typing happens */
-  letter-spacing: .15em; /* Adjust as needed */
-  animation:
-    typing 1.5s steps(40, end),
-    blink-caret .75s step-end infinite;
-}
 .welcome-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
+  height: 100vh;
+  background: transparent; /* Shows the App.css grid background */
 }
 
 .typewriter-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: center; /* This centers the text and the button as a group */
+  align-items: center;
   text-align: center;
+  z-index: 1;
+}
+
+.typewriter h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 3rem;
+  color: var(--text);
+  overflow: hidden;
+  border-right: 3px solid var(--accent);
+  white-space: nowrap;
+  margin: 0 auto;
+  letter-spacing: -0.02em; /* Tighter spacing for a modern look */
+  /*text-transform: uppercase;*/
+
+  /* Red Glow on Text */
+  text-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+
+  animation:
+    typing 1.5s steps(40, end),
+    blink-caret .75s step-end infinite;
 }
 
 /* The typing effect */
@@ -32,5 +45,13 @@
 /* The typewriter cursor effect */
 @keyframes blink-caret {
   from, to { border-color: transparent }
-  50% { border-color: orange; }
+  50% { border-color: var(--accent); }
+}
+
+/* Responsive Font Sizing */
+@media (max-width: 768px) {
+  .typewriter h1 {
+    font-size: 1.8rem;
+    border-right-width: 2px;
+  }
 }

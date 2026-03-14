@@ -1,39 +1,50 @@
 .round-button {
-  width: 60px; /* Slightly increased button size to house a bigger arrow */
+  width: 60px;
   height: 60px;
-  background-color: orange;
-  border: none;
+  /* Glassmorphism Red */
+  background-color: rgba(255, 0, 0, 0.2);
+  border: 1px solid rgba(255, 0, 0, 0.4);
   border-radius: 50%;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Centering and Animation */
   margin: 20px auto 0;
   opacity: 0;
   animation: fadeIn 0.5s ease forwards;
+  /* Default delay matches the Welcome typewriter speed */
   animation-delay: 1.8s;
+
+  /* Subtle Tech Glow */
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.1);
 }
 
-/* This targets the arrow icon specifically */
 .round-button svg {
-  width: 32px;  /* Increased from 24px */
-  height: 32px; /* Increased from 24px */
-  stroke-width: 5; /* Makes the arrow lines look bolder and cleaner */
+  width: 28px;
+  height: 28px;
+  stroke-width: 3;
+  transition: transform 0.3s ease;
 }
 
+/* Hover State - Industrial Glow */
 .round-button:hover {
-  background-color: #e67e00;
+  background-color: #ff0000;
   transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+  border-color: #ff0000;
+}
+
+.round-button:hover svg {
+  transform: translateX(3px); /* Arrow nudges forward on hover */
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(15px);
   }
   to {
     opacity: 1;
