@@ -1,57 +1,56 @@
-/* 1. Base Container */
 .message-container {
     display: flex;
-    margin-bottom: 30px;
-    gap: 15px;
-    width: 100%; /* Important for alignment */
-    align-items: flex-start; 
+    margin-bottom: 24px;
+    gap: 16px;
+    width: 100%;
+    animation: fadeIn 0.3s ease;
 }
 
-/* 2. Bot Layout (Icon Left, Text Right) */
-.message-container.bot {
-    flex-direction: row; 
-    justify-content: flex-start;
-}
-
-/* 3. User Layout (Text Left, Icon Right) */
-.message-container.user {
-    flex-direction: row; /* Icon and text in a line */
-    justify-content: flex-end; /* Pushes the pair to the right edge */
-}
-
-/* 4. Ensure the Icon is Visible */
 .avatar-wrapper {
-    width: 42px;
-    height: 42px;
-    flex-shrink: 0; /* Prevents the icon from squishing to 0px */
-    border-radius: 50%;
-    border: 2px solid orange;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(255, 165, 0, 0.05);
-    padding: 8px;
-    box-sizing: border-box;
+    background: var(--surface);
+    color: var(--muted);
 }
 
-/* 5. Bubble Specifics */
+.bot .avatar-wrapper {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.message-content {
+    max-width: 80%;
+}
+
+.message-header {
+    margin-bottom: 4px;
+}
+
 .message-bubble {
-    padding: 14px 22px;
-    font-size: 1rem;
-    line-height: 1.5;
-    word-wrap: break-word;
-    max-width: 70%; /* Prevents text from hitting the other side */
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    border: 1px solid var(--border);
+    background: rgba(30, 30, 46, 0.4);
+    backdrop-filter: blur(4px);
 }
 
+/* Red Accents for Bot */
 .bot .message-bubble {
-    background-color: #252525;
-    color: #efefef;
-    border-radius: 0px 18px 18px 18px;
+    border-left: 3px solid var(--accent);
+    color: var(--text);
 }
 
+/* Subtle style for User */
 .user .message-bubble {
-    background-color: orange;
-    color: white;
-    border-radius: 18px 0px 18px 18px;
-    /* No 'order' needed if we just place the HTML correctly */
+    border-left: 3px solid var(--muted);
+    color: var(--muted);
 }
+
+.user { flex-direction: row-reverse; text-align: right; }
+.user .message-header { display: flex; justify-content: flex-end; }
