@@ -7,6 +7,9 @@ torchinfo~=1.8.0
 scikit-learn~=1.7.2
 matplotlib~=3.10.8
 kagglehub~=1.0.0
+pydantic-settings~=2.13.1
+sqlalchemy~=2.0.47
+websockets~=16.0
 PyYAML~=6.0.3
 joblib~=1.5.3
 python-box~=7.4.1
@@ -15,4 +18,5 @@ nltk~=3.9.3
 optuna~=4.7.0
 torchvision~=0.20.1+cu121
 pillow~=12.0.0
+passlib
 SQLAlchemy~=2.0.47
