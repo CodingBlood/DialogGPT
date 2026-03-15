@@ -1,0 +1,100 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: var(--sidebar-width);
+  background-color: var(--surface);
+  padding: 40px 0; /* Changed padding to 0 on sides for NavItem bleed */
+  z-index: 2000;
+  border-right: 1px solid var(--border);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(10px);
+}
+
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 0 30px 30px 30px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-svg {
+  width: 28px;
+  height: 28px;
+  color: var(--accent);
+}
+
+.company-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.2rem;
+  color: var(--text);
+  letter-spacing: 1px;
+}
+
+.bold-gpt {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.nav-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-footer {
+  padding: 20px 30px;
+  border-top: 1px solid var(--border);
+  opacity: 0.5;
+}
+
+/* --- Hamburger Menu --- */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 3000;
+  cursor: pointer;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 12px;
+  transition: border-color 0.3s;
+}
+
+.hamburger:hover {
+  border-color: var(--accent);
+}
+
+.line {
+  width: 22px;
+  height: 1px; /* Thinner lines for a tech look */
+  background-color: var(--text);
+  margin: 6px 0;
+  transition: 0.3s;
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 280px;
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+    box-shadow: 20px 0 60px rgba(0,0,0,0.8);
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .hamburger.active .line:nth-child(1) { transform: translateY(7px) rotate(45deg); background-color: var(--accent); }
+  .hamburger.active .line:nth-child(2) { opacity: 0; }
+  .hamburger.active .line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background-color: var(--accent); }
+}

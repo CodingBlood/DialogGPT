@@ -1,0 +1,50 @@
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--muted);
+    transition: all 0.2s ease;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-indicator {
+    margin-right: 12px;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.nav-label {
+    transition: transform 0.2s ease;
+}
+
+/* Hover State */
+.nav-item:hover {
+    color: var(--text);
+    background: rgba(255, 0, 0, 0.05);
+}
+
+.nav-item:hover .nav-indicator {
+    opacity: 1;
+}
+
+.nav-item:hover .nav-label {
+    transform: translateX(4px);
+}
+
+/* Active State (for the current page) */
+.nav-item.active {
+    color: var(--accent);
+    background: rgba(255, 0, 0, 0.08);
+    border-right: 2px solid var(--accent);
+}
+
+.nav-item.active .nav-indicator {
+    opacity: 1;
+}
