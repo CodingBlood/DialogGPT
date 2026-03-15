@@ -1,14 +1,7 @@
 from sqlalchemy.orm import Session
 import backend.models.db_models as model
 import backend.models.user_schema as user_schema
-from passlib.context import CryptContext
-
-# Setup the hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+import backend.core.utils as utils
 
 
 def get_users(db: Session):
@@ -26,7 +19,7 @@ def get_user(db: Session, user_id: str):
 
 def create_user(db: Session, user: user_schema.UserCreate):
     # 1. Hash the incoming plain-text password
-    hashed_pw = get_password_hash(user.password)
+    hashed_pw = utils.get_password_hash(user.password)
 
     # 2. Build the SQLAlchemy model safely
     db_user = model.User(
@@ -62,3 +55,19 @@ def update_user(db: Session, user: user_schema.UserUpdate, user_id: int):
         db.commit()
         db.refresh(db_user)
     return db_user
+
+########################################################################################
+################################### Auth Endpoints #####################################
+########################################################################################
+
+
+
+
+def authenticate_user(db: Session, user):
+    db_user = db.query(model.User).filter(model.User.username == user.username).first()
+    if db_user:
+        if utils.verify_password(user.password, db_user.hashed_password):
+            access_token = utils.create_access_token(data={"sub": user.username})
+            return {'access_token':access_token, 'token_type':'bearer'}
+        return {'access_token':'invalid_pass', 'token_type':'bearer'}
+    return {'access_token':'invalid_user', 'token_type':'bearer'}
