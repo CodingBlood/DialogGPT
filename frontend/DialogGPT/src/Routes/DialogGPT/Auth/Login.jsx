@@ -1,15 +1,53 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './Login.css';
 import { Link, useNavigate } from 'react-router-dom'; // Added Link and useNavigate
 import { FaGithub, FaGoogle } from 'react-icons/fa';
+import axios from "axios";
 
 export default function Login() {
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    // After logic, send them to the Welcome page
-    navigate('/DialogGPT');
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleLogin = async (e) => {
+      e.preventDefault();
+      try {
+          // 1. Convert your state object into URL-encoded form data
+          const params = new URLSearchParams();
+          params.append('username', formData.username);
+          params.append('password', formData.password);
+
+          // 2. Perform the request with the correct Content-Type header
+          const response = await axios.post(
+              'http://127.0.0.1:8000/DialogGPT/login',
+              params, // Send params instead of the raw formData object
+              {
+                  headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                  }
+              }
+          );
+
+          if (response.status === 200) {
+              console.log("Login Success:", response.data);
+              // Save the token!
+              localStorage.setItem('token', response.data.access_token);
+              navigate('/DialogGPT/chat');
+          }
+      } catch (error) {
+          console.error("Login error:", error.response?.data || error.message);
+          alert("Login failed. Check username/password.");
+      }
   };
 
   return (
@@ -26,12 +64,12 @@ export default function Login() {
         <form className="login-form" onSubmit={handleLogin}>
           <div className="input-group">
             <label>USERNAME</label>
-            <input type="text" placeholder="user_ID" required />
+            <input type="text" placeholder="user_ID" value={formData.username} onChange={handleInputChange} name="username"  required />
           </div>
 
           <div className="input-group">
             <label>ACCESS KEY</label>
-            <input type="password" placeholder="••••••••" required />
+            <input type="password" placeholder="••••••••" value={formData.password}  onChange={handleInputChange} name="password" required />
           </div>
 
           <div className="form-options">

@@ -20,3 +20,8 @@ torchvision~=0.20.1+cu121
 pillow~=12.0.0
 passlib
 SQLAlchemy~=2.0.47
+
+starlette
+loguru
+pydantic
+authlib

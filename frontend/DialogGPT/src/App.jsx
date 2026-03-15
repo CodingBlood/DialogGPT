@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Index from './Routes/Index/Index.jsx';
 import Welcome from './Routes/DialogGPT/Welcome/Welcome.jsx';
+import ProtectedRoute from './Routes/DialogGPT/Auth/ProtectedRoute.jsx'
 import Chat from './Routes/DialogGPT/Chat/Chat.jsx';
 
 // Your new Consolidated Auth Imports
@@ -25,7 +26,7 @@ function App() {
 
           {/* Main App Routes */}
           <Route path="/DialogGPT" element={<Welcome/>} />
-          <Route path="/DialogGPT/chat" element={<Chat/>} />
+          <Route path="/DialogGPT/chat" element={<ProtectedRoute><Chat/></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </div>
